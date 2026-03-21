@@ -1,111 +1,98 @@
 <!DOCTYPE html>
-<!-- نحدد لغة الصفحة بأنها العربية، واتجاه النص من اليمين لليسار (RTL) -->
-<!-- هنا سأستخدم اتجاه (LTR) لجعل التصميم يبدو كالمواقع العالمية، ولكن سأضع التعليقات بالعربي -->
-<html lang="ar">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>متجر الموضة الراقي | Fashion Store</title>
-    <!-- ربط ملف التنسيقات (CSS) بالصفحة -->
+    <title>Vesto - Virtual Try On</title>
+    <!-- استدعاء خطوط جوجل للحصول على تصميم عصري وأنيق -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body dir="ltr"> <!-- جعلنا اتجاه المحتوى من اليسار لليمين لأن التصميم مبني بأسلوب عصري عالمي -->
-
-    <!-- ========================================= -->
-    <!-- 1. شريط التنقل العلوي (Header) -->
-    <!-- ========================================= -->
-    <header>
-        <!-- شعار الموقع -->
-        <a href="#" class="logo">AURA</a>
+<body>
+    <!-- الحاوية الرئيسية التي تتوسط الشاشة -->
+    <div class="main-container">
         
-        <!-- قائمة الروابط (Navigation) -->
-        <nav>
-            <ul>
-                <li><a href="#">الرئيسية (Home)</a></li>
-                <li><a href="#shop">التسوق (Shop)</a></li>
-                <li><a href="#">المجموعات (Collections)</a></li>
-                <li><a href="#">تواصل معنا (Contact)</a></li>
-            </ul>
-        </nav>
-        
-        <!-- أزرار المستخدم (حساب وسلة التسوق) -->
-        <div class="header-actions">
-            <button class="icon-btn" title="حسابي">👤</button>
-            <button class="icon-btn" title="السلة">🛍️</button>
-        </div>
-    </header>
-
-    <main>
-        <!-- ========================================= -->
-        <!-- 2. قسم البداية (Hero Section) للموقع -->
-        <!-- ========================================= -->
-        <section class="hero">
-            <!-- صورة الخلفية الرئيسية -->
-            <div class="hero-image">
-                <img src="image/hero_banner.png" alt="أزياء راقية">
+        <!-- القسم العلوي: العنوان وإعدادات الأفاتار -->
+        <header class="top-section">
+            <h1 class="logo">Vesto <span>Virtual Try On</span></h1>
+            <div class="avatar-controls">
+                <div class="input-group">
+                    <label for="height">Height (cm)</label>
+                    <input type="number" id="height" placeholder="175">
+                </div>
+                <div class="input-group">
+                    <label for="weight">Weight (kg)</label>
+                    <input type="number" id="weight" placeholder="70">
+                </div>
+                <!-- زر إنشاء الأفاتار -->
+                <button id="create-avatar-btn" class="primary-btn">Create Avatar</button>
             </div>
-            <!-- المحتوى النصي فوق الصورة -->
-            <div class="hero-content">
-                <h1>رقي يعانق الحداثة</h1>
-                <p>اكتشف مجموعتنا الجديدة من الملابس والاكسسوارات المصممة لتبرز أناقتك وجمالك بطريقة استثنائية وبسيطة.</p>
-                <!-- زر دعوة لاتخاذ إجراء (Call to action) -->
-                <a href="#shop" class="btn-primary">تسوق المجموعة الجديدة</a>
-            </div>
-        </section>
+        </header>
 
-        <!-- ========================================= -->
-        <!-- 3. قسم المنتجات المميزة (Featured Products) -->
-        <!-- ========================================= -->
-        <section id="shop" class="products-section">
-            <h2 class="section-title">التشكيلة المختارة</h2>
+        <!-- منطقة المحتوى الرئيسية المقسمة لجزئين -->
+        <main class="content-split">
             
-            <!-- شبكة عرض المنتجات -->
-            <div class="products-grid">
-                
-                <!-- بطاقة المنتج الأول: الفستان -->
-                <div class="product-card">
-                    <div class="product-image-wrapper">
-                        <!-- نستخدم هنا الصورة المولدة بالذكاء الاصطناعي للفستان -->
-                        <img src="image/product_dress.png" alt="فستان أنيق">
-                        <!-- زر يظهر عند تمرير الماوس فوق الصورة -->
-                        <button class="add-to-cart-btn">أضف إلى السلة</button>
-                    </div>
-                    <div class="product-info">
-                        <h3>فستان السهرة المخملي (Velvet Dress)</h3>
-                        <p class="product-price">$120.00</p>
-                    </div>
+            <!-- الجانب الأيسر: منطقة عرض الأفاتار (مساحة 2D للمحاكاة) -->
+            <section class="avatar-display-area">
+                <div class="avatar-placeholder" id="avatar-container">
+                    <!-- طبقة الأفاتار الأساسي (الجسم) محملة من مجلد images -->
+                    <img id="base-avatar" class="avatar-layer" src="images/base-avatar.svg" alt="Base Avatar">
+                    <!-- طبقة الملابس (شفافة في البداية لتظهر عند الاختيار) تكون فوق الجسم -->
+                    <img id="clothing-overlay" class="avatar-layer fade-out" src="" alt="Clothing Overlay">
                 </div>
-
-                <!-- بطاقة المنتج الثاني: الحقيبة -->
-                <div class="product-card">
-                    <div class="product-image-wrapper">
-                        <!-- صورة الحقيبة -->
-                        <img src="image/product_bag.png" alt="حقيبة جلدية">
-                        <button class="add-to-cart-btn">أضف إلى السلة</button>
-                    </div>
-                    <div class="product-info">
-                        <h3>حقيبة يد جلدية نقية (Leather Handbag)</h3>
-                        <p class="product-price">$85.00</p>
-                    </div>
+                <!-- نص يوضح الزي الحالي الذي تم اختياره -->
+                <div class="current-outfit-label">
+                    Current outfit: <span id="outfit-name" class="highlight-text">None</span>
                 </div>
+            </section>
 
-                <!-- بطاقة المنتج الثالث: فستان صيفي -->
-                <div class="product-card">
-                    <div class="product-image-wrapper">
-                        <img src="image/product_dress.png" alt="فستان أبيض">
-                        <button class="add-to-cart-btn">أضف إلى السلة</button>
+            <!-- الجانب الأيمن: لوحة اختيار الملابس -->
+            <section class="clothing-panel">
+                <h2>Select Clothing</h2>
+                <div class="clothing-grid">
+                    
+                    <!-- عنصر ملابس: تي شيرت -->
+                    <div class="clothing-item" data-id="tshirt" data-name="T-Shirt">
+                        <div class="item-icon-wrapper">
+                            <img src="images/tshirt-icon.svg" alt="T-Shirt" class="item-icon">
+                        </div>
+                        <h3 class="item-name">T-Shirt</h3>
+                        <button class="wear-btn">Wear</button>
                     </div>
-                    <div class="product-info">
-                        <h3>فستان صيفي كلاسيكي (Summer Classic)</h3>
-                        <p class="product-price">$95.00</p>
+
+                    <!-- عنصر ملابس: جاكيت -->
+                    <div class="clothing-item" data-id="jacket" data-name="Jacket">
+                        <div class="item-icon-wrapper">
+                            <img src="images/jacket-icon.svg" alt="Jacket" class="item-icon">
+                        </div>
+                        <h3 class="item-name">Jacket</h3>
+                        <button class="wear-btn">Wear</button>
                     </div>
+
+                    <!-- عنصر ملابس: هودي -->
+                    <div class="clothing-item" data-id="hoodie" data-name="Hoodie">
+                        <div class="item-icon-wrapper">
+                            <img src="images/hoodie-icon.svg" alt="Hoodie" class="item-icon">
+                        </div>
+                        <h3 class="item-name">Hoodie</h3>
+                        <button class="wear-btn">Wear</button>
+                    </div>
+
+                    <!-- عنصر ملابس: قميص -->
+                    <div class="clothing-item" data-id="shirt" data-name="Shirt">
+                        <div class="item-icon-wrapper">
+                            <img src="images/shirt-icon.svg" alt="Shirt" class="item-icon">
+                        </div>
+                        <h3 class="item-name">Shirt</h3>
+                        <button class="wear-btn">Wear</button>
+                    </div>
+
                 </div>
+            </section>
+        </main>
+    </div>
 
-            </div>
-        </section>
-    </main>
-
-    <!-- ربط ملف الجافاسكريبت ليعمل على إعطاء الحياة (التفاعلية) للموقع -->
+    <!-- ربط ملف الجافاسكريبت المحدث -->
     <script src="script.js"></script>
 </body>
 </html>

@@ -1,308 +1,373 @@
-/* 
-  استيراد خط "Inter" من جوجل فونتس ليكون الخط الأساسي للموقع 
-  هذا الخط يعطي مظهراً عصرياً ونظيفاً (Modern & Clean)
-*/
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-/* 
-  تعريف المتغيرات الأساسية (CSS Variables)
-  تسهل علينا تغيير الألوان والخطوط في كل الموقع من مكان واحد
-*/
+/* إعدادات المتغيرات للألوان والتصميم لتسهيل التعديل (تصميم حديث) */
 :root {
-  --primary-color: #111111; /* أسود داكن للنصوص الأساسية */
-  --secondary-color: #666666; /* رمادي للنصوص الثانوية */
-  --bg-color: #fafafa; /* لون خلفية أبيض مائل للرمادي لراحة العين */
-  --accent-color: #c0a080; /* لون ذهبي/بيج متناسق للمسات الجمالية (أزرار مثلاً) */
-  --font-family: 'Inter', sans-serif;
-  --transition: all 0.3s ease; /* سرعة تأثيرات الحركة (Hover وغيرها) */
+    --bg-color: #e2e8f0;
+    --container-bg: #ffffff;
+    --primary-color: #3b82f6;
+    --primary-hover: #2563eb;
+    --text-dark: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #cbd5e1;
+    --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.05);
+    --shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.15);
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* إعادة ضبط الإعدادات الافتراضية للمتصفح (CSS Reset) */
+/* إعادة ضبط الإعدادات الافتراضية للمتصفح */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-  font-family: var(--font-family);
-  background-color: var(--bg-color);
-  color: var(--primary-color);
-  line-height: 1.6;
-  overflow-x: hidden; /* لمنع التمرير الأفقي غير المرغوب فيه */
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-color);
+    background-image: linear-gradient(135deg, #e2e8f0 0%, #f8fafc 100%);
+    color: var(--text-dark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
 }
 
-/* 
-  ========================================
-  1. تصميم شريط التنقل (Header/Navbar)
-  ========================================
-*/
-header {
-  position: fixed; /* يبقى ثابتاً في الأعلى عند التمرير */
-  top: 0;
-  width: 100%;
-  padding: 1.5rem 5%;
-  display: flex; /* ترتيب العناصر بجانب بعضها */
-  justify-content: space-between; /* مسافة بين الشعار والقائمة */
-  align-items: center; /* توسيط عمودي */
-  z-index: 1000; /* لضمان ظهور الشريط فوق كل العناصر الأخرى */
-  /* تأثير الزجاج (Glassmorphism): خلفية شفافة مع ضبابية */
-  background: rgba(250, 250, 250, 0.85);
-  backdrop-filter: blur(10px); 
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  transition: var(--transition);
+/* الحاوية الرئيسية */
+.main-container {
+    background: var(--container-bg);
+    max-width: 1100px;
+    width: 100%;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
-header .logo {
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-decoration: none;
-  color: var(--primary-color);
-  text-transform: uppercase;
+/* تنسيق القسم العلوي */
+.top-section {
+    padding: 30px 40px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
 }
 
-header nav ul {
-  display: flex;
-  list-style: none; /* إزالة النقاط من القائمة */
-  gap: 2rem; /* المسافة بين الروابط */
+.logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    letter-spacing: -0.5px;
 }
 
-header nav a {
-  text-decoration: none;
-  color: var(--primary-color);
-  font-weight: 500;
-  font-size: 0.95rem;
-  position: relative; /* مهم لإضافة تأثير الخط السفلي عند التأشير */
-  transition: var(--transition);
+.logo span {
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--primary-color);
+    margin-left: 8px;
 }
 
-/* تأثير جميل عند تمرير الماوس على الروابط: خط يظهر من اليسار لليمين */
-header nav a::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background-color: var(--accent-color);
-  transition: width 0.3s ease;
+/* تنسيق أدوات التحكم */
+.avatar-controls {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    flex-wrap: wrap;
 }
 
-header nav a:hover::after {
-  width: 100%; /* الخط يمتد ليغطي الكلمة بالكامل */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
-/* أزرار السلة والحساب */
-.header-actions {
-  display: flex;
-  gap: 1.5rem;
-  align-items: center;
+.input-group label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-muted);
 }
 
-.icon-btn {
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  cursor: pointer;
-  color: var(--primary-color);
-  transition: var(--transition);
-}
-
-.icon-btn:hover {
-  color: var(--accent-color);
-  transform: scale(1.1); /* تكبير الأيقونة قليلاً عند التأشير */
-}
-
-/* 
-  ========================================
-  2. قسم البداية (Hero Section)
-  ========================================
-*/
-.hero {
-  height: 100vh; /* يأخذ ارتفاع الشاشة بالكامل */
-  display: flex;
-  align-items: center;
-  padding: 0 5%;
-  position: relative;
-  overflow: hidden;
-}
-
-/* الحاوية التي تحمل صورة العرض الرئيسية */
-.hero-image {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1; /* خلف النص */
-}
-
-.hero-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* لضمان تغطية الصورة للمساحة دون تشويه */
-  /* إضافة فلتر داكن بسيط لتوضيح النص فوق الصورة */
-  filter: brightness(0.65);
-}
-
-/* النصوص الترحيبية */
-.hero-content {
-  max-width: 600px;
-  color: #fff; /* لون النص أبيض ليتناسب مع الصورة المظلمة قليلاً */
-  animation: fadeIn 1.5s ease; /* أنيميشن للظهور التدريجي */
-}
-
-.hero-content h1 {
-  font-size: 4rem;
-  font-weight: 300;
-  line-height: 1.1;
-  margin-bottom: 1rem;
-}
-
-.hero-content p {
-  font-size: 1.2rem;
-  margin-bottom: 2.5rem;
-  color: rgba(255, 255, 255, 0.85);
-}
-
-/* الزر الرئيسي (Call to Action) */
-.btn-primary {
-  display: inline-block;
-  padding: 1rem 2.5rem;
-  background-color: #fff;
-  color: var(--primary-color);
-  text-decoration: none;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  border-radius: 4px;
-  transition: var(--transition);
-}
-
-.btn-primary:hover {
-  background-color: var(--accent-color);
-  color: #fff;
-  transform: translateY(-3px); /* ارتفاع الزر للأعلى قليلاً */
-  box-shadow: 0 10px 20px rgba(0,0,0,0.1); /* ظل جميل */
-}
-
-/* 
-  ========================================
-  3. قسم المنتجات (Products Grid)
-  ========================================
-*/
-.products-section {
-  padding: 6rem 5%;
-  text-align: center;
-}
-
-.section-title {
-  font-size: 2.5rem;
-  font-weight: 300;
-  margin-bottom: 3rem;
-  position: relative;
-  display: inline-block;
-}
-
-/* تصميم شبكي (CSS Grid) لترتيب المنتجات بشكل عصري ومتجاوب */
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* يتكيف تلقائياً مع حجم الشاشة */
-  gap: 3rem; /* المسافة بين المنتجات */
-}
-
-/* بطاقة المنتج */
-.product-card {
-  text-align: left;
-  cursor: pointer;
-}
-
-/* حاوية صورة المنتج */
-.product-image-wrapper {
-  position: relative;
-  overflow: hidden; /* إخفاء أي جزء يخرج خارج الإطار عند التكبير */
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
-  background-color: #f1f1f1;
-  aspect-ratio: 3/4; /* نسبة العرض للارتفاع المثالية لصور الأزياء */
-}
-
-.product-image-wrapper img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.6s ease; /* تأثير حركة ناعم جداً للتكبير */
-}
-
-/* زر إضافي يظهر عند تمرير الماوس على صورة المنتج */
-.add-to-cart-btn {
-  position: absolute;
-  bottom: -50px; /* مخفي تحت الصورة في البداية */
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  padding: 0.8rem;
-  background-color: var(--primary-color);
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: bottom 0.3s ease;
-}
-
-/* ما يحدث عند التأشير على بطاقة المنتج */
-.product-card:hover .product-image-wrapper img {
-  transform: scale(1.05); /* تكبير الصورة بنسبة 5% بلطف */
-}
-
-.product-card:hover .add-to-cart-btn {
-  bottom: 15px; /* صعود الزر ليظهر فوق الصورة */
-}
-
-.product-info h3 {
-  font-size: 1.1rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-}
-
-.product-price {
-  color: var(--secondary-color);
-  font-size: 1rem;
-}
-
-/* 
-  ========================================
-  4. تنسيقات التجاوب (Mobile Responsiveness)
-  ========================================
-*/
-@media (max-width: 768px) {
-  header {
-    padding: 1rem 5%;
-  }
-  
-  header nav ul {
-    display: none; /* إخفاء القائمة في الموبايل للبساطة الآن */
-  }
-
-  .hero-content h1 {
-    font-size: 2.5rem; /* تصغير الخط في الموبايل */
-  }
-
-  .hero-content p {
+.input-group input {
+    padding: 12px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    font-family: inherit;
     font-size: 1rem;
-  }
+    width: 130px;
+    outline: none;
+    transition: var(--transition);
+    background: #f8fafc;
 }
 
-/* تأثير حركة (Keyframe Animation) للظهور من الأسفل للأعلى */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.input-group input:focus {
+    border-color: var(--primary-color);
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+}
+
+.primary-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    height: 46px;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.primary-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+/* الجانب الأيسر: عرض الأفاتار والمحاكاة ثنائية الأبعاد */
+.content-split {
+    display: flex;
+    flex-direction: row;
+    min-height: 600px;
+}
+
+.avatar-display-area {
+    flex: 1;
+    background: #f8fafc;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid var(--border-color);
+}
+
+/* مساحة عرض الصور متراكبة (الأفاتار والملابس) */
+.avatar-placeholder {
+    width: 100%;
+    max-width: 300px;
+    height: 420px;
+    background: #ffffff;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    margin-bottom: 30px;
+    position: relative;
+    border: 1px solid var(--border-color);
+    overflow: hidden; /* يمنع الصور من الخروج عن الإطار */
+}
+
+/* طبقات عرض الصور */
+.avatar-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+    transition: opacity 0.35s ease-in-out; 
+}
+
+/* طبقة جسم الإنسان أو المانيكان الأساسية */
+#base-avatar {
+    z-index: 1;
+}
+
+/* طبقة الملابس التي توضع فوق الجسم */
+#clothing-overlay {
+    z-index: 10;
+}
+
+/* كلاسات نستخدمها في كود الجافاسكريبت لعمل تأثير التلاشي (Fade Effect) */
+.fade-out {
+    opacity: 0 !important;
+}
+
+.fade-in {
+    opacity: 1 !important;
+}
+
+.current-outfit-label {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-dark);
+    background: white;
+    padding: 14px 28px;
+    border-radius: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.highlight-text {
+    color: var(--primary-color);
+    font-weight: 700;
+    display: inline-block;
+    transition: var(--transition);
+}
+
+/* الجانب الأيمن: لوحة اختيار الملابس */
+.clothing-panel {
+    flex: 1.2;
+    padding: 40px;
+    background: var(--container-bg);
+}
+
+.clothing-panel h2 {
+    margin-bottom: 30px;
+    font-size: 1.6rem;
+    color: var(--text-dark);
+    font-weight: 700;
+}
+
+.clothing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 24px;
+}
+
+.clothing-item {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: var(--transition);
+    background: white;
+    cursor: pointer;
+}
+
+/* تحسين تأثير الـ Hover ليكون متجاوب وناعم أكثر */
+.clothing-item:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-6px);
+    border-color: #94a3b8;
+}
+
+/* تصميم الكارت المُحدد حالياً */
+.clothing-item.selected {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--primary-color), 0 8px 25px rgba(59, 130, 246, 0.2);
+    background: #f8fafc;
+    transform: translateY(-2px);
+}
+
+/* غلاف الأيقونة (سابقاً .item-image) لاستيعاب صورة الـ img بشكل سليم */
+.item-icon-wrapper {
+    margin-bottom: 20px;
+    height: 110px;
+    width: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    border-radius: 50%;
+    transition: var(--transition);
+    overflow: hidden;
+}
+
+/* تنسيق الصورة بداخل الإطار الدائري */
+.item-icon {
+    width: 65px;
+    height: 65px;
+    object-fit: contain;
+    transition: var(--transition);
+}
+
+.clothing-item:hover .item-icon-wrapper {
+    background: #e2e8f0;
+}
+
+.clothing-item:hover .item-icon {
+    transform: scale(1.15) rotate(5deg);
+}
+
+.clothing-item.selected .item-icon-wrapper {
+    background: #eff6ff;
+}
+
+.item-name {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--text-dark);
+}
+
+.wear-btn {
+    width: 100%;
+    padding: 12px;
+    background: white;
+    color: var(--text-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.wear-btn:hover {
+    background: #f8fafc;
+    border-color: var(--text-muted);
+}
+
+.clothing-item.selected .wear-btn {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.clothing-item.selected .wear-btn:hover {
+    background: var(--primary-hover);
+}
+
+/* التصميم المتجاوب للهواتف والأجهزة الصغيرة */
+@media (max-width: 900px) {
+    .content-split {
+        flex-direction: column;
+    }
+    .avatar-display-area {
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        padding: 30px 20px;
+    }
+    .clothing-panel {
+        padding: 30px 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    .top-section {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 24px 20px;
+    }
+    .avatar-controls {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+    }
+    .input-group input {
+        width: 100%;
+    }
+    .primary-btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+    .clothing-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 400px) {
+    .clothing-grid {
+        grid-template-columns: 1fr;
+    }
 }
