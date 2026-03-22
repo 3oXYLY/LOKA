@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256">
+  <rect width="256" height="256" fill="#f59e0b" />
+  <pattern id="checker" width="32" height="32" patternUnits="userSpaceOnUse">
+    <rect width="16" height="16" fill="#d97706" opacity="0.6" />
+    <rect x="16" y="16" width="16" height="16" fill="#d97706" opacity="0.6" />
+  </pattern>
+  <rect width="256" height="256" fill="url(#checker)" />
+</svg>

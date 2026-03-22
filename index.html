@@ -3,9 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vesto - Virtual Try On</title>
+    <title>Vesto - Virtual Try On (3D)</title>
     <!-- استدعاء خطوط جوجل للحصول على تصميم عصري وأنيق -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- مكتبة Three.js الأساسية للرسم ثلاثي الأبعاد -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- مكتبة التحكم بالكاميرا (OrbitControls) تابعة لـ Three.js لتمكين تدوير الأفاتار -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- أداة تحميل المجسمات الاحترافية (GLTFLoader) لدعم صيغ glb و gltf الحديثة -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -32,13 +40,11 @@
         <!-- منطقة المحتوى الرئيسية المقسمة لجزئين -->
         <main class="content-split">
             
-            <!-- الجانب الأيسر: منطقة عرض الأفاتار (مساحة 2D للمحاكاة) -->
+            <!-- الجانب الأيسر: منطقة عرض الأفاتار (مساحة تفاعلية 3D) -->
             <section class="avatar-display-area">
+                <!-- تم تفريغ الحاوية لتستقبل الرسم ثلاثي الأبعاد من الجافاسكريبت (الكانفاس) -->
                 <div class="avatar-placeholder" id="avatar-container">
-                    <!-- طبقة الأفاتار الأساسي (الجسم) محملة من مجلد images -->
-                    <img id="base-avatar" class="avatar-layer" src="images/base-avatar.svg" alt="Base Avatar">
-                    <!-- طبقة الملابس (شفافة في البداية لتظهر عند الاختيار) تكون فوق الجسم -->
-                    <img id="clothing-overlay" class="avatar-layer fade-out" src="" alt="Clothing Overlay">
+                    <!-- سيتم حقن مساحة العمل (Canvas) الخاصة بمكتبة Three.js هنا -->
                 </div>
                 <!-- نص يوضح الزي الحالي الذي تم اختياره -->
                 <div class="current-outfit-label">
@@ -92,7 +98,7 @@
         </main>
     </div>
 
-    <!-- ربط ملف الجافاسكريبت المحدث -->
+    <!-- ربط ملف الجافاسكريبت المتضمن إعدادات الـ 3D -->
     <script src="script.js"></script>
 </body>
 </html>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256">
+  <rect width="256" height="256" fill="#065f46" />
+  <pattern id="denim" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <line x1="0" y1="0" x2="0" y2="16" stroke="#047857" stroke-width="4" opacity="0.6" />
+    <line x1="0" y1="0" x2="16" y2="0" stroke="#064e3b" stroke-width="2" opacity="0.4" />
+  </pattern>
+  <rect width="256" height="256" fill="url(#denim)" />
+</svg>

@@ -130,13 +130,14 @@ body {
     box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
 }
 
-/* الجانب الأيسر: عرض الأفاتار والمحاكاة ثنائية الأبعاد */
+/* تقسيم المحتوى الرئيسي إلى عمودين */
 .content-split {
     display: flex;
     flex-direction: row;
     min-height: 600px;
 }
 
+/* الجانب الأيسر: عرض الأفاتار 3D */
 .avatar-display-area {
     flex: 1;
     background: #f8fafc;
@@ -148,52 +149,38 @@ body {
     border-right: 1px solid var(--border-color);
 }
 
-/* مساحة عرض الصور متراكبة (الأفاتار والملابس) */
+/* مساحة عرض الكانفاس (Canvas) الخاص بـ Three.js */
 .avatar-placeholder {
     width: 100%;
-    max-width: 300px;
-    height: 420px;
+    max-width: 350px; /* تم التكبير قليلاً لإظهار المجسم 3D بشكل أجمل */
+    height: 450px;
     background: #ffffff;
     border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    box-shadow: inset 0 4px 20px rgba(0,0,0,0.04);
     margin-bottom: 30px;
     position: relative;
     border: 1px solid var(--border-color);
-    overflow: hidden; /* يمنع الصور من الخروج عن الإطار */
+    overflow: hidden; /* يمنع مجسم الكانفاس من تخطي حواف المربع الدائرية */
 }
 
-/* طبقات عرض الصور */
-.avatar-layer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: contain; 
-    transition: opacity 0.35s ease-in-out; 
+/* تنسيق الـ Canvas الذي سينتجه Three.js في الجافاسكريبت */
+#avatar-container canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    outline: none;
+    cursor: grab; /* تغيير شكل مؤشر الماوس ليدل على إمكانية السحب والدوران */
+    background: linear-gradient(160deg, #f1f5f9 0%, #e2e8f0 100%);
 }
 
-/* طبقة جسم الإنسان أو المانيكان الأساسية */
-#base-avatar {
-    z-index: 1;
+#avatar-container canvas:active {
+    cursor: grabbing; /* مؤشر الماوس أثناء عملية التدوير */
 }
 
-/* طبقة الملابس التي توضع فوق الجسم */
-#clothing-overlay {
-    z-index: 10;
-}
-
-/* كلاسات نستخدمها في كود الجافاسكريبت لعمل تأثير التلاشي (Fade Effect) */
-.fade-out {
-    opacity: 0 !important;
-}
-
-.fade-in {
-    opacity: 1 !important;
-}
+/* تم إزالة تنسيقات الطبقات القديمة (avatar-layer, fade-in, fade-out) لأننا انتقلنا لـ 3D */
 
 .current-outfit-label {
     font-size: 1.1rem;
@@ -244,7 +231,7 @@ body {
     cursor: pointer;
 }
 
-/* تحسين تأثير الـ Hover ليكون متجاوب وناعم أكثر */
+/* تحسين تأثير الـ Hover */
 .clothing-item:hover {
     box-shadow: var(--shadow-hover);
     transform: translateY(-6px);
@@ -259,7 +246,6 @@ body {
     transform: translateY(-2px);
 }
 
-/* غلاف الأيقونة (سابقاً .item-image) لاستيعاب صورة الـ img بشكل سليم */
 .item-icon-wrapper {
     margin-bottom: 20px;
     height: 110px;
@@ -273,7 +259,6 @@ body {
     overflow: hidden;
 }
 
-/* تنسيق الصورة بداخل الإطار الدائري */
 .item-icon {
     width: 65px;
     height: 65px;

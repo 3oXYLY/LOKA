@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256">
+  <rect width="256" height="256" fill="#8b5cf6" />
+  <pattern id="fleece" width="20" height="20" patternUnits="userSpaceOnUse">
+    <circle cx="10" cy="10" r="10" fill="#7c3aed" opacity="0.4" />
+  </pattern>
+  <rect width="256" height="256" fill="url(#fleece)" />
+</svg>
