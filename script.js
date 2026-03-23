@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let scene, camera, renderer, controls;
     let avatarGroup; 
     let currentClothingMesh = null; 
+    let avatarBodyMesh = null; // متغير للتحكم بـ (جذع) الأفاتار الذكي وإخفاءه
     
     // مخزن (كائن/Object) لقطع الملابس الهندسية المجسمة
     const clothingModels = {};
@@ -61,9 +62,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // الجذع
         const bodyGeometry = new THREE.CylinderGeometry(1.5, 1.4, 6, 32);
-        const body = new THREE.Mesh(bodyGeometry, skinMaterial);
-        body.position.y = 2.5; 
-        avatarGroup.add(body);
+        avatarBodyMesh = new THREE.Mesh(bodyGeometry, skinMaterial);
+        avatarBodyMesh.position.y = 2.5; 
+        avatarGroup.add(avatarBodyMesh);
 
         // المنصة الارضية
         const baseGeometry = new THREE.CylinderGeometry(3.5, 3.5, 0.5, 32);
@@ -309,6 +310,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (selectedClothingMesh) {
             avatarGroup.add(selectedClothingMesh);
             currentClothingMesh = selectedClothingMesh;
+            
+            // 🥷 ميزة إخفاء/تقليص جسم الأفاتار الذكي لمنع اختراق الملابس (Clipping)
+            if (avatarBodyMesh) {
+                // نظراً لأن المجسم الذي أحضرته عبارة عن لوح مسطح وليس له تجويف ليلبسه الأفاتار،
+                // قمنا الآن بإخفاء بطن الأفاتار بالكامل بدلاً من مجرد تقليصه، لكي لا تبرز الصورة أمامه!
+                avatarBodyMesh.visible = false; 
+            }
             
             outfitNameDisplay.textContent = itemName;
             outfitNameDisplay.style.transform = 'scale(1.15)';
