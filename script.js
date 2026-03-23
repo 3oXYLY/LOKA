@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let scene, camera, renderer, controls;
     let avatarGroup; 
     let currentClothingMesh = null; 
-    let avatarBodyMesh = null; // متغير للتحكم بـ (جذع) الأفاتار الذكي وإخفاءه
     
     // مخزن (كائن/Object) لقطع الملابس الهندسية المجسمة
     const clothingModels = {};
@@ -37,10 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(width, height);
         renderer.setPixelRatio(window.devicePixelRatio);
-        
-        // تفعيل الظلال الواقعية عالية الجودة
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap; // ظلال ناعمة ومتدرجة
         avatarContainer.appendChild(renderer.domElement);
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
@@ -48,16 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
         directionalLight.position.set(10, 15, 10);
-        // إعدادات ظلال الضوء الموجه
-        directionalLight.castShadow = true;
-        directionalLight.shadow.mapSize.width = 1024; // دقة الظل
-        directionalLight.shadow.mapSize.height = 1024;
-        directionalLight.shadow.camera.near = 0.5;
-        directionalLight.shadow.camera.far = 50;
-        directionalLight.shadow.camera.left = -15;
-        directionalLight.shadow.camera.right = 15;
-        directionalLight.shadow.camera.top = 15;
-        directionalLight.shadow.camera.bottom = -15;
         scene.add(directionalLight);
 
         avatarGroup = new THREE.Group();
@@ -72,22 +57,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const headGeometry = new THREE.SphereGeometry(1.5, 32, 32);
         const head = new THREE.Mesh(headGeometry, skinMaterial);
         head.position.y = 6.5; 
-        head.castShadow = true; // الرأس يصنع ظلاً
         avatarGroup.add(head);
 
         // الجذع
         const bodyGeometry = new THREE.CylinderGeometry(1.5, 1.4, 6, 32);
-        avatarBodyMesh = new THREE.Mesh(bodyGeometry, skinMaterial);
-        avatarBodyMesh.position.y = 2.5; 
-        avatarBodyMesh.castShadow = true; // الجذع يصنع ظلاً
-        avatarGroup.add(avatarBodyMesh);
+        const body = new THREE.Mesh(bodyGeometry, skinMaterial);
+        body.position.y = 2.5; 
+        avatarGroup.add(body);
 
         // المنصة الارضية
         const baseGeometry = new THREE.CylinderGeometry(3.5, 3.5, 0.5, 32);
         const baseMaterial = new THREE.MeshStandardMaterial({ color: 0xcbd5e1 });
         const base = new THREE.Mesh(baseGeometry, baseMaterial);
         base.position.y = -0.7;
-        base.receiveShadow = true; // المنصة تستقبل الظلال لتظهر عليها كأرضية
         scene.add(base);
 
         scene.add(avatarGroup);
@@ -178,13 +160,15 @@ document.addEventListener('DOMContentLoaded', () => {
             function (gltf) {
                 const object = gltf.scene; // استخراج المشهد من ملف الـ GLTF
                 
-                // إعداد مجسمك الخارجي ليتفاعل مع الظلال
+                // إيقاف إكساء المجسم باللون الأزرق الإجباري حتى تظهر الألوان والتفاصيل الأصلية لملفك!
+                // قمنا بتهميش الكود بوضع (/* */) لكي لا يطغى على لون التيشيرت الحقيقي
+                /*
                 object.traverse(function (child) {
                     if (child.isMesh) {
-                        child.castShadow = true;    // الملف يصدر ظلالاً
-                        child.receiveShadow = true; // ويستقبل الظلال المعاكسة (كالطيّات)
+                        child.material = tshirtMat;
                     }
                 });
+                */
                 
                 // نظام برمجي ذكي لضبط حجم أي مجسم تحمله من الإنترنت تلقائياً
                 // (لأن المجسمات تختلف أحجامها، بعضها عملاق وبعضها صغير جداً)
@@ -224,8 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const jacketMat = new THREE.MeshStandardMaterial({ map: jacketTex, roughness: 0.6, color: 0xffffff });
         const jacketMesh = new THREE.Mesh(jacketGeo, jacketMat);
         jacketMesh.position.y = 3.1; 
-        jacketMesh.castShadow = true;
-        jacketMesh.receiveShadow = true;
         clothingModels['jacket'] = jacketMesh;
 
         // ج. الهودي (Hoodie)
@@ -235,14 +217,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const hoodieMat = new THREE.MeshStandardMaterial({ map: hoodieTex, roughness: 1.0, color: 0xffffff });
         const hoodieMesh = new THREE.Mesh(hoodieGeo, hoodieMat);
         hoodieMesh.position.y = 3.5; 
-        hoodieMesh.castShadow = true;
-        hoodieMesh.receiveShadow = true;
         
         // قبعة الهودي
         const hoodGeo = new THREE.SphereGeometry(1.2, 32, 32);
         const hood = new THREE.Mesh(hoodGeo, hoodieMat);
         hood.position.set(0, 2.5, -0.6); 
-        hood.castShadow = true;
         hoodieMesh.add(hood); 
         clothingModels['hoodie'] = hoodieMesh;
 
@@ -253,8 +232,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const shirtMat = new THREE.MeshStandardMaterial({ map: shirtTex, roughness: 0.85, color: 0xffffff });
         const shirtMesh = new THREE.Mesh(shirtGeo, shirtMat);
         shirtMesh.position.y = 3.5; 
-        shirtMesh.castShadow = true;
-        shirtMesh.receiveShadow = true;
         clothingModels['shirt'] = shirtMesh;
 
 
@@ -332,13 +309,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (selectedClothingMesh) {
             avatarGroup.add(selectedClothingMesh);
             currentClothingMesh = selectedClothingMesh;
-            
-            // 🥷 ميزة إخفاء/تقليص جسم الأفاتار الذكي لمنع اختراق الملابس (Clipping)
-            if (avatarBodyMesh) {
-                // نظراً لأن المجسم الذي أحضرته عبارة عن لوح مسطح وليس له تجويف ليلبسه الأفاتار،
-                // قمنا الآن بإخفاء بطن الأفاتار بالكامل بدلاً من مجرد تقليصه، لكي لا تبرز الصورة أمامه!
-                avatarBodyMesh.visible = false; 
-            }
             
             outfitNameDisplay.textContent = itemName;
             outfitNameDisplay.style.transform = 'scale(1.15)';
