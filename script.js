@@ -20,9 +20,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 2. متغيرات أساسية للبيئة ثلاثية الأبعاد والمجسمات ---
     let scene, camera, renderer, controls;
     let avatarGroup; 
+    let avatarTorsoGroup; // 🌟 مجموعة جديدة خاصة بالصدر والملابس معاً لتسهيل حركة التنفس
+    let avatarHeadMesh = null; // 🌟 للتحكم بحركة الرأس، سيتم تحويله لمجموعة (Group)
+    let currentGender = 'male'; // 🌟 الجنس الافتراضي للأفاتار
     let currentClothingMesh = null; 
     let avatarBodyMesh = null; // متغير للتحكم بـ (جذع) الأفاتار الذكي وإخفاءه
     
+    let clock = new THREE.Clock(); // 🌟 أداة لحساب الوقت لإنشاء حركات مستمرة وناعمة
+
     // مخزن (كائن/Object) لقطع الملابس الهندسية المجسمة
     const clothingModels = {};
 
@@ -47,24 +52,28 @@ document.addEventListener('DOMContentLoaded', () => {
         scene.add(directionalLight);
 
         avatarGroup = new THREE.Group();
+        avatarTorsoGroup = new THREE.Group(); // إضافة مجموعة الصدر
+        avatarGroup.add(avatarTorsoGroup); // ربط مجموعة الصدر بالأفاتار الرئيسي
 
         const skinMaterial = new THREE.MeshStandardMaterial({ 
-            color: 0xe2e8f0, 
-            roughness: 0.6, 
+            color: 0xffe0bd, // لون بشرة واقعي فاتح
+            roughness: 0.5, 
             metalness: 0.1 
         });
 
-        // الرأس
-        const headGeometry = new THREE.SphereGeometry(1.5, 32, 32);
-        const head = new THREE.Mesh(headGeometry, skinMaterial);
-        head.position.y = 6.5; 
-        avatarGroup.add(head);
+        // إعداد حاوية الرأس كـ (Group) لكي تتسع للملامح المتعددة
+        avatarHeadMesh = new THREE.Group();
+        avatarHeadMesh.position.y = 6.5; 
+        avatarGroup.add(avatarHeadMesh);
+        
+        // بناء الرأس لأول مرة بناءً على الجنس الافتراضي
+        buildFace(currentGender);
 
         // الجذع
         const bodyGeometry = new THREE.CylinderGeometry(1.5, 1.4, 6, 32);
         avatarBodyMesh = new THREE.Mesh(bodyGeometry, skinMaterial);
         avatarBodyMesh.position.y = 2.5; 
-        avatarGroup.add(avatarBodyMesh);
+        avatarTorsoGroup.add(avatarBodyMesh); // إضافة الجذع لمجموعة الصدر وليس الأفاتار العام
 
         // المنصة الارضية
         const baseGeometry = new THREE.CylinderGeometry(3.5, 3.5, 0.5, 32);
@@ -190,9 +199,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 clothingModels['tshirt'] = object;
                 
                 // تحديث مباشر في حال كان المستخدم قد ضغط على لبس القطعة أثناء بدء التحميل
-                if (currentClothingMesh === oldMesh && avatarGroup) {
-                    avatarGroup.remove(oldMesh);
-                    avatarGroup.add(object);
+                if (currentClothingMesh === oldMesh && avatarTorsoGroup) {
+                    avatarTorsoGroup.remove(oldMesh);
+                    avatarTorsoGroup.add(object);
                     currentClothingMesh = object;
                 }
             },
@@ -251,9 +260,147 @@ document.addEventListener('DOMContentLoaded', () => {
         animate();
     }
 
+    // --- 🤖 بناء ملامح الوجه بناءً على الجنس ---
+    function buildFace(gender) {
+        if (!avatarHeadMesh) return;
+        
+        // مسح الملامح السابقة (إن وجدت) أثناء التبديل
+        while (avatarHeadMesh.children.length > 0) {
+            avatarHeadMesh.remove(avatarHeadMesh.children[0]);
+        }
+
+        const skinMaterial = new THREE.MeshStandardMaterial({ color: 0xffe0bd, roughness: 0.5, metalness: 0.1 });
+        // حل مشكلة الوجه الأسود بجعل الشعر يُرسم من الداخل والخارج DoubleSide
+        const hairMaterial = new THREE.MeshStandardMaterial({ color: 0x1f2937, roughness: 0.9, side: THREE.DoubleSide });
+        const eyeMaterial = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.1, metalness: 0.8 });
+
+        if (gender === 'male') {
+            // الرأس (جمجمة أطول ومربعة أكثر للرجل)
+            const skullGeo = new THREE.SphereGeometry(1.4, 32, 32);
+            const skull = new THREE.Mesh(skullGeo, skinMaterial);
+            skull.scale.set(1.02, 1.15, 1.05);
+            avatarHeadMesh.add(skull);
+
+            // الأنف (بارز ومستطيل قليلاً)
+            const noseGeo = new THREE.BoxGeometry(0.25, 0.4, 0.3);
+            const nose = new THREE.Mesh(noseGeo, skinMaterial);
+            nose.position.set(0, -0.1, 1.45);
+            avatarHeadMesh.add(nose);
+
+            // العيون
+            const eyeGeo = new THREE.SphereGeometry(0.13, 16, 16);
+            const leftEye = new THREE.Mesh(eyeGeo, eyeMaterial);
+            leftEye.position.set(-0.45, 0.2, 1.35);
+            const rightEye = new THREE.Mesh(eyeGeo, eyeMaterial);
+            rightEye.position.set(0.45, 0.2, 1.35);
+            avatarHeadMesh.add(leftEye, rightEye);
+
+            // خوارزمية شعر الشاب (قصير وأنيق)
+            // 1. شعر أعلى الرأس
+            const topHairGeo = new THREE.SphereGeometry(1.45, 32, 16, 0, Math.PI * 2, 0, Math.PI / 1.95);
+            const topHair = new THREE.Mesh(topHairGeo, hairMaterial);
+            topHair.position.y = 0.1;
+            topHair.rotation.x = -0.15; // كشف الجبهة للوراء
+            
+            // 2. شعر خلفي وجانبي (Sideburns) يغطي الخلف فقط
+            const baseHairGeo = new THREE.CylinderGeometry(1.42, 1.25, 0.7, 32, 1, true, Math.PI * 0.8, Math.PI * 1.4);
+            const baseHair = new THREE.Mesh(baseHairGeo, hairMaterial);
+            baseHair.position.y = -0.3;
+            baseHair.rotation.x = -0.1;
+            
+            avatarHeadMesh.add(topHair, baseHair);
+
+            if (avatarBodyMesh) avatarBodyMesh.scale.set(1, 1, 1);
+
+        } else if (gender === 'female') {
+            // الرأس (جمجمة مستديرة وأنعم للأنثى)
+            const skullGeo = new THREE.SphereGeometry(1.3, 32, 32);
+            const skull = new THREE.Mesh(skullGeo, skinMaterial);
+            skull.scale.set(0.95, 1.0, 0.95); 
+            avatarHeadMesh.add(skull);
+
+            // الأنف (أصغر وأدق)
+            const noseGeo = new THREE.ConeGeometry(0.12, 0.3, 16);
+            const nose = new THREE.Mesh(noseGeo, skinMaterial);
+            nose.position.set(0, -0.05, 1.25);
+            nose.rotation.x = Math.PI / 1.8;
+            avatarHeadMesh.add(nose);
+
+            // العيون (أكبر قليلاً وأوسع)
+            const eyeGeo = new THREE.SphereGeometry(0.15, 16, 16);
+            const leftEye = new THREE.Mesh(eyeGeo, eyeMaterial);
+            leftEye.position.set(-0.4, 0.15, 1.2);
+            const rightEye = new Mesh(eyeGeo, eyeMaterial);
+            rightEye.position.set(0.4, 0.15, 1.2);
+            
+            // إبراز الشكل الأنثوي بإضافة رموش
+            const lashGeo = new THREE.TorusGeometry(0.15, 0.03, 8, 16, Math.PI);
+            const leftLash = new THREE.Mesh(lashGeo, hairMaterial);
+            leftLash.position.set(-0.4, 0.15, 1.28);
+            leftLash.rotation.set(0.2, 0, 0);
+            const rightLash = new THREE.Mesh(lashGeo, hairMaterial);
+            rightLash.position.set(0.4, 0.15, 1.28);
+            rightLash.rotation.set(0.2, 0, 0);
+
+            avatarHeadMesh.add(leftEye, rightEye, leftLash, rightLash);
+
+            // خوارزمية شعر الفتاة (طويل وغزير ولا يخترق الوجه)
+            // 1. قاع الشعر العلوي
+            const topHairGeo = new THREE.SphereGeometry(1.38, 32, 16, 0, Math.PI * 2, 0, Math.PI / 1.95);
+            const topHair = new THREE.Mesh(topHairGeo, hairMaterial);
+            topHair.position.y = 0.05;
+            topHair.rotation.x = -0.1;
+
+            // 2. الشعر الطويل المنسدل للخلف
+            const backHairGeo = new THREE.SphereGeometry(1.2, 32, 32);
+            const backHair = new THREE.Mesh(backHairGeo, hairMaterial);
+            backHair.scale.set(1.15, 1.6, 0.55); // عريض ومسطح قليلا كطبقة
+            backHair.position.set(0, -1.0, -0.6); 
+
+            // 3. غرة الشعر (Bangs) من الأمام لجمالية أكثر
+            const bangsGeo = new THREE.SphereGeometry(1.35, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2.5);
+            const bangs = new THREE.Mesh(bangsGeo, hairMaterial);
+            bangs.scale.set(1.05, 1.0, 0.3);
+            bangs.position.set(0, 0.15, 0.95);
+            bangs.rotation.x = 0.2;
+
+            avatarHeadMesh.add(topHair, backHair, bangs);
+
+            // تنحيف الجذع للفتاة
+            if (avatarBodyMesh) avatarBodyMesh.scale.set(0.9, 1, 0.9);
+        }
+    }
+
     // دالة الرسم المستمرة (Loop)
     function animate() {
         requestAnimationFrame(animate);
+
+        // --- 🤖 إضافة حركات الأفاتار (Animations) ---
+        // مثل سناب شات للحصول على مظهر حي وملابس متناسقة
+        const time = clock.getElapsedTime(); // الحصول على الوقت الحالي
+        
+        if (avatarGroup) {
+            // 1. حركة الطفو (Bobbing/Hovering) للجسم كاملاً (الرأس + الصدر + الملابس) لمحاكاة الوقوف المرن
+            // تم تكبير حركة الطفو لتكون ملاحظة
+            avatarGroup.position.y = Math.sin(time * 2.5) * 0.15;
+        }
+
+        if (avatarTorsoGroup) {
+            // 2. حركة التنفس (Breathing) توسع وانكماش بطيء للصدر والملابس معاً
+            // تم زيادة نسبة التمدد (4% بدلاً من 1.5%) لنرى التنفس بعيننا
+            const breathingScale = 1 + Math.sin(time * 4) * 0.04;
+            avatarTorsoGroup.scale.set(breathingScale, 1, breathingScale);
+        }
+
+        if (avatarHeadMesh) {
+            // 3. حركة الرأس الحر (Looking Around)
+            // التفات متكرر يميناً ويساراً مع إمالة واضحة جداً
+            avatarHeadMesh.rotation.y = Math.sin(time * 0.8) * 0.35; // تدوير الوجه بشكل أكبر
+            avatarHeadMesh.rotation.z = Math.cos(time * 1.2) * 0.1; // إمالة الرأس (ميلان) واضح
+            avatarHeadMesh.rotation.x = Math.sin(time * 1.5) * 0.1; // رفع وخفض الرأس
+        }
+        // ----------------------------------------------
+
         controls.update(); // استمرار تنعيم حركة الكاميرا
         renderer.render(scene, camera);
     }
@@ -298,17 +445,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 3. المنطق التفاعلي لتغيير الملابس ---
     // تم تعريف الدالة خارج init3D لكي تكون متاحة، ولكننا نراقب جاهزية avatarGroup
     function wearClothing3D(itemId, itemName) {
-        if (!avatarGroup) return; 
+        if (!avatarTorsoGroup) return; 
         
         // إزالة الملابس القديمة قبل إضافة الجديدة
         if (currentClothingMesh) {
-            avatarGroup.remove(currentClothingMesh);
+            avatarTorsoGroup.remove(currentClothingMesh);
         }
 
         const selectedClothingMesh = clothingModels[itemId];
         
         if (selectedClothingMesh) {
-            avatarGroup.add(selectedClothingMesh);
+            avatarTorsoGroup.add(selectedClothingMesh);
             currentClothingMesh = selectedClothingMesh;
             
             // 🥷 ميزة إخفاء/تقليص جسم الأفاتار الذكي لمنع اختراق الملابس (Clipping)
@@ -354,6 +501,33 @@ document.addEventListener('DOMContentLoaded', () => {
         const weightVal = weightInput.value.trim();
         
         if (heightVal && weightVal) {
+            // 🌟 تحديث الأبعاد فعلياً في العالم ثلاثي الأبعاد
+            // نفترض أن الطول الطبيعي 175 سم والوزن الطبيعي 70 كجم
+            const heightScale = parseFloat(heightVal) / 175;
+            // الوزن يؤثر على العرض والعمق بشكل معتدل (الجذر التربيعي يعطي نتيجة واقعية أكثر)
+            const weightRatio = parseFloat(weightVal) / 70;
+            const weightScale = Math.sqrt(weightRatio);
+
+            if (avatarGroup) {
+                // تطبيق التغيرات ببطء ونعومة (تأثير حركي)
+                let currentScaleY = avatarGroup.scale.y;
+                let currentScaleXZ = avatarGroup.scale.x;
+                
+                // دالة صغيرة للانتقال السلس Animation
+                let step = 0;
+                const animateScale = setInterval(() => {
+                    step += 0.05;
+                    if (step >= 1) {
+                        clearInterval(animateScale);
+                        avatarGroup.scale.set(weightScale, heightScale, weightScale);
+                    } else {
+                        const newY = currentScaleY + (heightScale - currentScaleY) * step;
+                        const newXZ = currentScaleXZ + (weightScale - currentScaleXZ) * step;
+                        avatarGroup.scale.set(newXZ, newY, newXZ);
+                    }
+                }, 20);
+            }
+
             const originalText = createAvatarBtn.textContent;
             createAvatarBtn.textContent = 'Avatar Configured!';
             createAvatarBtn.style.backgroundColor = '#10b981'; 
@@ -365,6 +539,22 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             alert("Please enter both height and weight to configure your 3D avatar.");
         }
+    });
+
+    // --- 6. تفاعل محدد الجنس ---
+    const genderBtns = document.querySelectorAll('.gender-btn');
+    genderBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // تحديث التحديد البصري للأزرار
+            genderBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            // قراءة الجنس وتمريره لدالة بناء الوجه
+            currentGender = this.getAttribute('data-gender');
+            if (typeof buildFace === 'function') {
+                buildFace(currentGender);
+            }
+        });
     });
 
 });
