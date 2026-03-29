@@ -4,28 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vesto - Virtual Try On (3D)</title>
-    <!-- استدعاء خطوط جوجل للحصول على تصميم عصري وأنيق -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- مكتبة Three.js الأساسية للرسم ثلاثي الأبعاد -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- مكتبة التحكم بالكاميرا (OrbitControls) تابعة لـ Three.js لتمكين تدوير الأفاتار -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <!-- أداة تحميل المجسمات الاحترافية (GLTFLoader) لدعم صيغ glb و gltf الحديثة -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+    
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- الحاوية الرئيسية التي تتوسط الشاشة -->
     <div class="main-container">
         
-        <!-- القسم العلوي: العنوان وإعدادات الأفاتار -->
         <header class="top-section">
             <h1 class="logo">Vesto <span>Virtual Try On</span></h1>
             <div class="avatar-controls">
                 
-                <!-- 🌟 خيارات اختيار الجنس (جديد) -->
                 <div class="gender-toggle">
                     <button class="gender-btn active" data-gender="male" id="btn-male">Male 👨</button>
                     <button class="gender-btn" data-gender="female" id="btn-female">Female 👩</button>
@@ -39,32 +37,24 @@
                     <label for="weight">Weight (kg)</label>
                     <input type="number" id="weight" placeholder="70">
                 </div>
-                <!-- زر إنشاء الأفاتار -->
                 <button id="create-avatar-btn" class="primary-btn">Create Avatar</button>
             </div>
         </header>
 
-        <!-- منطقة المحتوى الرئيسية المقسمة لجزئين -->
         <main class="content-split">
             
-            <!-- الجانب الأيسر: منطقة عرض الأفاتار (مساحة تفاعلية 3D) -->
             <section class="avatar-display-area">
-                <!-- تم تفريغ الحاوية لتستقبل الرسم ثلاثي الأبعاد من الجافاسكريبت (الكانفاس) -->
                 <div class="avatar-placeholder" id="avatar-container">
-                    <!-- سيتم حقن مساحة العمل (Canvas) الخاصة بمكتبة Three.js هنا -->
-                </div>
-                <!-- نص يوضح الزي الحالي الذي تم اختياره -->
+                    </div>
                 <div class="current-outfit-label">
                     Current outfit: <span id="outfit-name" class="highlight-text">None</span>
                 </div>
             </section>
 
-            <!-- الجانب الأيمن: لوحة اختيار الملابس -->
             <section class="clothing-panel">
                 <h2>Select Clothing</h2>
                 <div class="clothing-grid">
                     
-                    <!-- عنصر ملابس: تي شيرت -->
                     <div class="clothing-item" data-id="tshirt" data-name="T-Shirt">
                         <div class="item-icon-wrapper">
                             <img src="images/tshirt-icon.svg" alt="T-Shirt" class="item-icon">
@@ -73,7 +63,6 @@
                         <button class="wear-btn">Wear</button>
                     </div>
 
-                    <!-- عنصر ملابس: جاكيت -->
                     <div class="clothing-item" data-id="jacket" data-name="Jacket">
                         <div class="item-icon-wrapper">
                             <img src="images/jacket-icon.svg" alt="Jacket" class="item-icon">
@@ -82,7 +71,6 @@
                         <button class="wear-btn">Wear</button>
                     </div>
 
-                    <!-- عنصر ملابس: هودي -->
                     <div class="clothing-item" data-id="hoodie" data-name="Hoodie">
                         <div class="item-icon-wrapper">
                             <img src="images/hoodie-icon.svg" alt="Hoodie" class="item-icon">
@@ -91,7 +79,6 @@
                         <button class="wear-btn">Wear</button>
                     </div>
 
-                    <!-- عنصر ملابس: قميص -->
                     <div class="clothing-item" data-id="shirt" data-name="Shirt">
                         <div class="item-icon-wrapper">
                             <img src="images/shirt-icon.svg" alt="Shirt" class="item-icon">
@@ -105,7 +92,6 @@
         </main>
     </div>
 
-    <!-- ربط ملف الجافاسكريبت المتضمن إعدادات الـ 3D -->
-    <script src="script.js"></script>
+    <script type="module" src="main.js"></script>
 </body>
 </html>

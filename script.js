@@ -3,7 +3,9 @@
  * الكود يعتمد على Three.js لإنشاء بيئة ثلاثية الأبعاد تحتوي على مجسم (مانيكان)
  * مع عرض رسومات مُنّشأة تلقائياً (Canvas Textures) لتعمل بنسبة 100% دون أخطاء حماية!
  */
-
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 document.addEventListener('DOMContentLoaded', () => {
     
     // --- 1. تحديد عناصر واجهة المستخدم الثنائية (DOM Elements) ---
@@ -500,45 +502,33 @@ document.addEventListener('DOMContentLoaded', () => {
         const heightVal = heightInput.value.trim();
         const weightVal = weightInput.value.trim();
         
-        if (heightVal && weightVal) {
-            // 🌟 تحديث الأبعاد فعلياً في العالم ثلاثي الأبعاد
-            // نفترض أن الطول الطبيعي 175 سم والوزن الطبيعي 70 كجم
-            const heightScale = parseFloat(heightVal) / 175;
-            // الوزن يؤثر على العرض والعمق بشكل معتدل (الجذر التربيعي يعطي نتيجة واقعية أكثر)
-            const weightRatio = parseFloat(weightVal) / 70;
-            const weightScale = Math.sqrt(weightRatio);
+        // 1. إرسال البيانات إلى سيرفر بايثون (Flask)
+    fetch('http://127.0.0.1:5000/get_size', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            height: heightVal,
+            weight: weightVal
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // 2. تحديث الواجهة بالمقاس الذي أرسله بايثون
+        console.log("Size from Python:", data.size);
+        
+        // تأكد أن لديك عنصر في HTML يحمل هذا الـ ID: outfit-name أو أضف واحد جديد للمقاس
+        document.getElementById('outfit-name').innerText = "Suggested Size: " + data.size;
 
-            if (avatarGroup) {
-                // تطبيق التغيرات ببطء ونعومة (تأثير حركي)
-                let currentScaleY = avatarGroup.scale.y;
-                let currentScaleXZ = avatarGroup.scale.x;
-                
-                // دالة صغيرة للانتقال السلس Animation
-                let step = 0;
-                const animateScale = setInterval(() => {
-                    step += 0.05;
-                    if (step >= 1) {
-                        clearInterval(animateScale);
-                        avatarGroup.scale.set(weightScale, heightScale, weightScale);
-                    } else {
-                        const newY = currentScaleY + (heightScale - currentScaleY) * step;
-                        const newXZ = currentScaleXZ + (weightScale - currentScaleXZ) * step;
-                        avatarGroup.scale.set(newXZ, newY, newXZ);
-                    }
-                }, 20);
-            }
-
-            const originalText = createAvatarBtn.textContent;
-            createAvatarBtn.textContent = 'Avatar Configured!';
-            createAvatarBtn.style.backgroundColor = '#10b981'; 
-            
-            setTimeout(() => {
-                createAvatarBtn.textContent = originalText;
-                createAvatarBtn.style.backgroundColor = ''; 
-            }, 2000);
-        } else {
-            alert("Please enter both height and weight to configure your 3D avatar.");
+        // 3. هنا يمكنك جعل الأفاتار يتغير حجمه بناءً على رد بايثون
+        if (avatarGroup) {
+            // نستخدم الـ BMI القادم من بايثون لتغيير شكل الأفاتار
+            const scale = data.bmi / 22; // 22 هو المعدل الطبيعي
+            avatarGroup.scale.set(scale, 1, scale); 
         }
+    })
+    .catch(error => console.error('Error connecting to Python:', error));
     });
 
     // --- 6. تفاعل محدد الجنس ---
